@@ -88,12 +88,12 @@ Edit `.env` with your actual values:
 
 **Option 1: Detached Mode (Recommended for Production)**
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 **Option 2: Foreground Mode (For Development/Testing)**
 ```bash
-docker-compose up
+docker compose up
 ```
 *Use this option to see real-time logs and stop with Ctrl+C*
 
@@ -205,16 +205,16 @@ docker-compose up
 **Services Won't Start:**
 ```bash
 # Check logs (for detached mode)
-docker-compose logs [service-name]
+docker compose logs [service-name]
 
 # Or run in foreground to see live logs
-docker-compose up [service-name]
+docker compose up [service-name]
 
 # Restart specific service
-docker-compose restart [service-name]
+docker compose restart [service-name]
 
 # Rebuild if needed
-docker-compose up --build [service-name]
+docker compose up --build [service-name]
 ```
 
 **Permission Issues:**
@@ -227,7 +227,7 @@ sudo chown -R $USER:$USER ./media/
 **Cloudflare Tunnel Issues:**
 ```bash
 # Check tunnel status
-docker-compose logs cloudflared
+docker compose logs cloudflared
 
 # Verify token
 cloudflared tunnel list
@@ -242,15 +242,15 @@ cloudflared tunnel list
 
 ```bash
 # View all logs (for detached mode)
-docker-compose logs -f
+docker compose logs -f
 
 # View specific service logs
-docker-compose logs -f jellyfin
-docker-compose logs -f qbittorrent
-docker-compose logs -f yt-dlp-web-ui
+docker compose logs -f jellyfin
+docker compose logs -f qbittorrent
+docker compose logs -f yt-dlp-web-ui
 
 # Or run in foreground to see live logs
-docker-compose up jellyfin
+docker compose up jellyfin
 ```
 
 ## 🤝 Contributing
@@ -285,7 +285,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you need help:
 
-1. **Check the logs:** `docker-compose logs`
+1. **Check the logs:** `docker compose logs`
 2. **Review documentation:** This README and service-specific docs
 3. **Search issues:** GitHub Issues for similar problems
 4. **Create an issue:** If you can't find a solution
