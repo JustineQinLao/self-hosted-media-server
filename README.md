@@ -86,9 +86,16 @@ Edit `.env` with your actual values:
 
 ### 3. Start the Stack
 
+**Option 1: Detached Mode (Recommended for Production)**
 ```bash
 docker-compose up -d
 ```
+
+**Option 2: Foreground Mode (For Development/Testing)**
+```bash
+docker-compose up
+```
+*Use this option to see real-time logs and stop with Ctrl+C*
 
 ### 4. Access Your Services
 
@@ -197,8 +204,11 @@ docker-compose up -d
 
 **Services Won't Start:**
 ```bash
-# Check logs
+# Check logs (for detached mode)
 docker-compose logs [service-name]
+
+# Or run in foreground to see live logs
+docker-compose up [service-name]
 
 # Restart specific service
 docker-compose restart [service-name]
@@ -231,13 +241,16 @@ cloudflared tunnel list
 ### Logs and Monitoring
 
 ```bash
-# View all logs
+# View all logs (for detached mode)
 docker-compose logs -f
 
 # View specific service logs
 docker-compose logs -f jellyfin
 docker-compose logs -f qbittorrent
 docker-compose logs -f yt-dlp-web-ui
+
+# Or run in foreground to see live logs
+docker-compose up jellyfin
 ```
 
 ## 🤝 Contributing
