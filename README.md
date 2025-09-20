@@ -2,7 +2,6 @@
 
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue?style=for-the-badge&logo=docker)](https://docker.com)
 [![Jellyfin](https://img.shields.io/badge/Jellyfin-Media_Server-00A4DC?style=for-the-badge&logo=jellyfin)](https://jellyfin.org)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 A comprehensive self-hosted media server stack featuring Jellyfin for media streaming, automated torrent downloading with qBittorrent, YouTube downloading capabilities, and secure remote access via Cloudflare Tunnel.
 
@@ -17,7 +16,6 @@ A comprehensive self-hosted media server stack featuring Jellyfin for media stre
 - [Usage](#-usage)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
-- [License](#-license)
 
 ## ✨ Features
 
@@ -270,25 +268,12 @@ We welcome contributions! Please follow these steps:
 - Test changes thoroughly before submitting
 - Use meaningful commit messages
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - [Jellyfin](https://jellyfin.org) - The volunteer-built media solution
 - [qBittorrent](https://qbittorrent.org) - Feature-rich torrent client
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) - YouTube downloader
 - [Cloudflare](https://cloudflare.com) - Secure tunnel service
-
-## 📞 Support
-
-If you need help:
-
-1. **Check the logs:** `docker compose logs`
-2. **Review documentation:** This README and service-specific docs
-3. **Search issues:** GitHub Issues for similar problems
-4. **Create an issue:** If you can't find a solution
 
 ---
 
