@@ -1,0 +1,64 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    network_mode: host
+    environment:
+      - NGINX_PORT=${NGINX_PORT}
+      - JELLYFIN_PORT=${JELLYFIN_PORT}
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/logs:/var/log/nginx
+    command: /bin/sh -c "envsubst < /etc/nginx/conf.d/jellyfin.conf > /etc/nginx/conf.d/jellyfin.conf.tmp && mv /etc/nginx/conf.d/jellyfin.conf.tmp /etc/nginx/conf.d/jellyfin.conf && nginx -g 'daemon off;'"
+    depends_on:
+      jellyfin:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:${NGINX_PORT}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    user: 1000:1000
+    network_mode: host
+    volumes:
+      - ./jellyfin/config:/config
+      - ./jellyfin/cache:/cache
+      - ./media:/media
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${JELLYFIN_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    network_mode: host
+    restart: unless-stopped
+
+  yt-dlp-web-ui:
+    image: marcobaobao/yt-dlp-webui:latest
+    container_name: yt-dlp-web-ui
+    ports:
+      - "${YT_DLP_PORT}:${YT_DLP_PORT}"
+    volumes:
+      - ./media:/downloads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${YT_DLP_PORT}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  media_network:
+    driver: bridge
