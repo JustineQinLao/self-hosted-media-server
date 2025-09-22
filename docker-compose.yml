@@ -39,25 +39,26 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
 
+  yt-dlp-webui:
+    image: marcobaobao/yt-dlp-webui:latest
+    container_name: yt-dlp-webui
+    ports:
+      - ${YT_DLP_PORT}:3033
+    environment:
+      - JWT_SECRET=${YT_DLP_JWT_SECRET}
+    volumes:
+      - ./yt-dlp:/downloads
+      - ./yt-dlp/config:/config
+    command: yt-dlp-webui -conf /config/config.yml
+    healthcheck:
+      test: curl -f http://localhost:3033 || exit 1
+    restart: unless-stopped
+
   cloudflared:
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
     network_mode: host
     restart: unless-stopped
-
-  yt-dlp-web-ui:
-    image: marcobaobao/yt-dlp-webui:latest
-    container_name: yt-dlp-web-ui
-    ports:
-      - "${YT_DLP_PORT}:${YT_DLP_PORT}"
-    volumes:
-      - ./media:/downloads
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${YT_DLP_PORT}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 networks:
   media_network:

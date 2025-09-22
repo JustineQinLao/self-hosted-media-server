@@ -3,10 +3,11 @@
 .env.local
 .env.*.local
 
-# Media files - ignore all files inside media/ but keep directory structure
-media/**/*
-!media/**/
-!media/*/
+# Nginx configuration - ignore files inside conf.d but keep directory structure
+nginx/conf.d/**/*
+!nginx/conf.d/**/
+# YT-DLP configuration
+yt-dlp/config/
 
 # Media file extensions (additional patterns for files that might be at root level)
 *.mp4
@@ -94,8 +95,11 @@ venv.bak/
 *.old
 
 docs/
+media/series/
 jellyfin/config/
 jellyfin/cache/
 jellyfin/logs/
 
 
+qbittorrent
+qbittorrent/

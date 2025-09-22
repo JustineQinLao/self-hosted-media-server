@@ -20,8 +20,6 @@ A comprehensive self-hosted media server stack featuring Jellyfin for media stre
 ## ✨ Features
 
 - 🎬 **Jellyfin Media Server** - Stream your media library with a beautiful interface
-- ⬇️ **qBittorrent** - Automated torrent downloading and management
-- 🎵 **YouTube Downloader** - Download videos from YouTube and other platforms
 - 🌐 **Nginx Reverse Proxy** - Secure web access with SSL termination
 - 🔒 **Cloudflare Tunnel** - Secure remote access without port forwarding
 - 🐳 **Docker Compose** - Easy deployment and management
@@ -109,10 +107,15 @@ docker compose up
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
 | `JELLYFIN_PORT` | Internal port for Jellyfin | `8096` | No |
-| `YT_DLP_PORT` | Port for YouTube downloader | `3033` | No |
+| `YT_DLP_PORT` | Port for yt-dlp-webui | `3033` | No |
 | `NGINX_PORT` | Port for Nginx reverse proxy | `80` | No |
 | `CLOUDFLARED_TOKEN` | Cloudflare tunnel token | - | Yes |
 | `JELLYFIN_MEDIA_PATH` | Path to media directory | `./media` | No |
+| `YT_DLP_JWT_SECRET` | JWT secret for RPC authentication | - | Yes* |
+| `YT_DLP_AUTH` | Enable authentication | `false` | No |
+| `YT_DLP_USERNAME` | Admin username (when auth enabled) | `admin` | No |
+| `YT_DLP_PASSWORD` | Admin password (when auth enabled) | - | No |
+| `YT_DLP_QUEUE_SIZE` | Max concurrent downloads | `0` (unlimited) | No |
 
 ### Cloudflare Tunnel Setup
 
@@ -131,6 +134,37 @@ docker compose up
    - Add CNAME record pointing to your tunnel
    - Example: `media.yourdomain.com` → `your-tunnel-id.cfargotunnel.com`
 
+## 📁 Media Directory Structure
+
+The following directory structure is recommended for organizing your media files. These directories are already included in `.gitignore` to prevent large media files from being tracked by Git.
+
+```
+media/
+├── movies/          # For movie files
+├── series/          # For TV series (organized in subdirectories by show)
+├── music/           # For music files
+├── downloads/       # For incomplete downloads
+└── torrents/        # For completed torrents
+```
+
+### Media Naming Conventions
+
+For best compatibility with Jellyfin, follow these naming conventions:
+
+- **Movies**: `Movie Name (Year)/Movie Name (Year).ext`
+  Example: `The Shawshank Redemption (1994)/The Shawshank Redemption (1994).mkv`
+
+- **TV Shows**: `Show Name (Year)/Season XX/Show Name - SXXEYY - Episode Title.ext`
+  Example: `Breaking Bad (2008)/Season 01/Breaking Bad - S01E01 - Pilot.mkv`
+
+### Git Configuration
+
+The following paths are excluded from version control:
+- Media directories (movies, series, music, etc.)
+- Environment files (.env)
+- Configuration directories
+- Logs and cache files
+
 ## 🛠️ Services
 
 ### Jellyfin Media Server
@@ -147,9 +181,25 @@ docker compose up
 
 ### YT-DLP Web UI
 - **Purpose:** Download videos from YouTube and other platforms
-- **Features:** Web interface for yt-dlp, queue management
+- **Features:**
+  - Web interface for yt-dlp with queue management
+  - Support for 1000+ video platforms
+  - Optional RPC authentication with JWT
+  - Configurable download queue size limits
+  - Persistent configuration storage
 - **Access:** `http://localhost:3033`
-- **Supported Sites:** YouTube, Vimeo, Twitch, and 1000+ others
+- **Configuration:**
+  - Downloads saved to `./yt-dlp/` directory
+  - Configuration stored in `./yt-dlp/config/`
+  - JWT secret required for RPC authentication
+- **Authentication Setup:**
+  - Set `YT_DLP_AUTH=true` in `.env`
+  - Configure `YT_DLP_USERNAME` and `YT_DLP_PASSWORD`
+  - Generate a secure JWT secret for `YT_DLP_JWT_SECRET`
+- **Queue Management:**
+  - Set `YT_DLP_QUEUE_SIZE` to limit concurrent downloads
+  - `0` = unlimited (default)
+  - Example: `YT_DLP_QUEUE_SIZE=2` limits to 2 downloads
 
 ### Nginx Reverse Proxy
 - **Purpose:** Load balancing and SSL termination
@@ -192,9 +242,39 @@ docker compose up
 ### Downloading YouTube Videos
 
 1. **Access YT-DLP UI:** `http://localhost:3033`
-2. **Paste URL:** Enter YouTube or other video URLs
-3. **Configure Options:** Choose format, quality, output path
-4. **Download:** Videos save to your media directory
+2. **Authentication:** If enabled, log in with your configured credentials
+3. **Paste URL:** Enter YouTube or other video URLs
+4. **Configure Options:** Choose format, quality, output path
+5. **Download:** Videos save to your media directory
+
+#### Advanced Configuration:
+
+**Enable Authentication:**
+```bash
+# In your .env file
+YT_DLP_AUTH=true
+YT_DLP_USERNAME=your_username
+YT_DLP_PASSWORD=your_secure_password
+YT_DLP_JWT_SECRET=your_random_secret_here
+```
+
+**Generate JWT Secret:**
+```bash
+# Generate a random 32-character secret
+openssl rand -hex 32
+```
+
+**Limit Download Queue:**
+```bash
+# Limit to 2 concurrent downloads
+YT_DLP_QUEUE_SIZE=2
+```
+
+**Security Considerations:**
+- Use strong passwords for authentication
+- Generate unique JWT secrets for each deployment
+- Consider using Cloudflare Tunnel for remote access
+- Regularly backup your configuration in `./yt-dlp/config/`
 
 ## 🔧 Troubleshooting
 
@@ -245,7 +325,9 @@ docker compose logs -f
 # View specific service logs
 docker compose logs -f jellyfin
 docker compose logs -f qbittorrent
-docker compose logs -f yt-dlp-web-ui
+docker compose logs -f yt-dlp-webui
+docker compose logs -f nginx
+docker compose logs -f cloudflared
 
 # Or run in foreground to see live logs
 docker compose up jellyfin
