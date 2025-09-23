@@ -95,7 +95,7 @@ venv.bak/
 *.old
 
 docs/
-media/series/
+media/
 jellyfin/config/
 jellyfin/cache/
 jellyfin/logs/
