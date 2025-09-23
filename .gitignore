@@ -6,8 +6,6 @@
 # Nginx configuration - ignore files inside conf.d but keep directory structure
 nginx/conf.d/**/*
 !nginx/conf.d/**/
-# YT-DLP configuration
-yt-dlp/config/
 
 # Media file extensions (additional patterns for files that might be at root level)
 *.mp4
@@ -37,7 +35,6 @@ yt-dlp/config/
 # Application data and cache
 jellyfin/cache/
 jellyfin/config/
-qbittorrent/config/
 
 # Logs
 nginx/logs/
@@ -99,7 +96,3 @@ media/
 jellyfin/config/
 jellyfin/cache/
 jellyfin/logs/
-
-
-qbittorrent
-qbittorrent/

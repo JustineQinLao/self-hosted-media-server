@@ -3,7 +3,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue?style=for-the-badge&logo=docker)](https://docker.com)
 [![Jellyfin](https://img.shields.io/badge/Jellyfin-Media_Server-00A4DC?style=for-the-badge&logo=jellyfin)](https://jellyfin.org)
 
-A comprehensive self-hosted media server stack featuring Jellyfin for media streaming, automated torrent downloading with qBittorrent, YouTube downloading capabilities, and secure remote access via Cloudflare Tunnel.
+A comprehensive self-hosted media server stack featuring Jellyfin for media streaming and secure remote access via Cloudflare Tunnel.
 
 ## 📋 Table of Contents
 
@@ -33,16 +33,6 @@ A comprehensive self-hosted media server stack featuring Jellyfin for media stre
 │   Cloudflare    │────│     Nginx       │────│    Jellyfin     │
 │     Tunnel      │    │   (Port 80)     │    │   (Port 8096)   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │
-                                ├─────────────────┐
-                                │   qBittorrent   │
-                                │   (Port 8080)   │
-                                └─────────────────┘
-                                │
-                                ├─────────────────┐
-                                │  YT-DLP Web UI  │
-                                │   (Port 3033)   │
-                                └─────────────────┘
 ```
 
 ## 📋 Prerequisites
@@ -96,8 +86,6 @@ docker compose up
 ### 4. Access Your Services
 
 - **Jellyfin:** `http://localhost` (via Nginx reverse proxy)
-- **qBittorrent:** `http://localhost:8080` (default credentials: admin/adminadmin)
-- **YT-DLP Web UI:** `http://localhost:3033`
 - **Remote Access:** Via your Cloudflare tunnel URL
 
 ## ⚙️ Configuration
@@ -107,15 +95,8 @@ docker compose up
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
 | `JELLYFIN_PORT` | Internal port for Jellyfin | `8096` | No |
-| `YT_DLP_PORT` | Port for yt-dlp-webui | `3033` | No |
-| `NGINX_PORT` | Port for Nginx reverse proxy | `80` | No |
 | `CLOUDFLARED_TOKEN` | Cloudflare tunnel token | - | Yes |
 | `JELLYFIN_MEDIA_PATH` | Path to media directory | `./media` | No |
-| `YT_DLP_JWT_SECRET` | JWT secret for RPC authentication | - | Yes* |
-| `YT_DLP_AUTH` | Enable authentication | `false` | No |
-| `YT_DLP_USERNAME` | Admin username (when auth enabled) | `admin` | No |
-| `YT_DLP_PASSWORD` | Admin password (when auth enabled) | - | No |
-| `YT_DLP_QUEUE_SIZE` | Max concurrent downloads | `0` (unlimited) | No |
 
 ### Cloudflare Tunnel Setup
 
@@ -173,33 +154,7 @@ The following paths are excluded from version control:
 - **Configuration:** Accessible at root path via Nginx
 - **First Run:** Set up admin account and media libraries
 
-### qBittorrent
-- **Purpose:** Torrent downloading and management
-- **Features:** Web UI, RSS feeds, automated downloads
-- **Default Credentials:** `admin` / `adminadmin`
-- **Web UI:** `http://localhost:8080`
-
-### YT-DLP Web UI
-- **Purpose:** Download videos from YouTube and other platforms
-- **Features:**
-  - Web interface for yt-dlp with queue management
-  - Support for 1000+ video platforms
-  - Optional RPC authentication with JWT
-  - Configurable download queue size limits
-  - Persistent configuration storage
-- **Access:** `http://localhost:3033`
-- **Configuration:**
-  - Downloads saved to `./yt-dlp/` directory
-  - Configuration stored in `./yt-dlp/config/`
-  - JWT secret required for RPC authentication
-- **Authentication Setup:**
-  - Set `YT_DLP_AUTH=true` in `.env`
-  - Configure `YT_DLP_USERNAME` and `YT_DLP_PASSWORD`
-  - Generate a secure JWT secret for `YT_DLP_JWT_SECRET`
-- **Queue Management:**
-  - Set `YT_DLP_QUEUE_SIZE` to limit concurrent downloads
-  - `0` = unlimited (default)
-  - Example: `YT_DLP_QUEUE_SIZE=2` limits to 2 downloads
+  - Configure your media libraries and user accounts
 
 ### Nginx Reverse Proxy
 - **Purpose:** Load balancing and SSL termination
@@ -232,49 +187,11 @@ The following paths are excluded from version control:
    - Add Movie Library pointing to `./media/Movies`
    - Add TV Show Library pointing to `./media/TV Shows`
 
-### Downloading with qBittorrent
+### Security Considerations
 
-1. **Access Web UI:** `http://localhost:8080`
-2. **Change Default Password:** Tools → Preferences → Web UI
-3. **Add Torrents:** Drag & drop .torrent files or paste magnet links
-4. **Set Download Location:** Point to your media directory
-
-### Downloading YouTube Videos
-
-1. **Access YT-DLP UI:** `http://localhost:3033`
-2. **Authentication:** If enabled, log in with your configured credentials
-3. **Paste URL:** Enter YouTube or other video URLs
-4. **Configure Options:** Choose format, quality, output path
-5. **Download:** Videos save to your media directory
-
-#### Advanced Configuration:
-
-**Enable Authentication:**
-```bash
-# In your .env file
-YT_DLP_AUTH=true
-YT_DLP_USERNAME=your_username
-YT_DLP_PASSWORD=your_secure_password
-YT_DLP_JWT_SECRET=your_random_secret_here
-```
-
-**Generate JWT Secret:**
-```bash
-# Generate a random 32-character secret
-openssl rand -hex 32
-```
-
-**Limit Download Queue:**
-```bash
-# Limit to 2 concurrent downloads
-YT_DLP_QUEUE_SIZE=2
-```
-
-**Security Considerations:**
 - Use strong passwords for authentication
-- Generate unique JWT secrets for each deployment
 - Consider using Cloudflare Tunnel for remote access
-- Regularly backup your configuration in `./yt-dlp/config/`
+- Regularly backup your configuration
 
 ## 🔧 Troubleshooting
 
@@ -324,8 +241,6 @@ docker compose logs -f
 
 # View specific service logs
 docker compose logs -f jellyfin
-docker compose logs -f qbittorrent
-docker compose logs -f yt-dlp-webui
 docker compose logs -f nginx
 docker compose logs -f cloudflared
 
@@ -353,8 +268,6 @@ We welcome contributions! Please follow these steps:
 ## 🙏 Acknowledgments
 
 - [Jellyfin](https://jellyfin.org) - The volunteer-built media solution
-- [qBittorrent](https://qbittorrent.org) - Feature-rich torrent client
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - YouTube downloader
 - [Cloudflare](https://cloudflare.com) - Secure tunnel service
 
 ---
